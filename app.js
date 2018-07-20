@@ -13,7 +13,8 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 const mongoose = require('mongoose');
 const Dishes = require('./models/dishes');
-const url = 'mongodb://localhost:27017/conFusion';
+var config = require('./config');
+const url = config.mongoUrl;
 const connect = mongoose.connect(url);
 var session = require('express-session');
 var FileStore = require('session-file-store')(session);
@@ -48,20 +49,6 @@ app.use(passport.session());
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
-function auth (req, res, next) {
-  console.log(req.user);
-  if (!req.user) {
-    var err = new Error('You are not authenticated!');
-    res.setHeader('WWW-Authenticate', 'Basic');                          
-    err.status = 401;
-    next(err);
-  }
-  else {
-        next();
-  }
-}
-
-app.use(auth);
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/dishes', dishRouter);
 app.use('/promotions', promoRouter);
